@@ -17,7 +17,7 @@ window.addEventListener('load', () => {
             console.log("✅ Framer Brain Removed. Form is now independent.");
 
             // 3. AB NAYE FORM PAR APNA CONTROL LAGAO
-            zombieForm.action = "https://formsubmit.co/opeditor5@gmail.com";
+            zombieForm.action = "https://formsubmit.co/vtoog2008@gmail.com";
             zombieForm.method = "POST";
 
             // 4. HIDDEN SETTINGS INJECT KARO (Redirect, Subject)
@@ -65,3 +65,4 @@ window.addEventListener('load', () => {
         }
     }, 500); // Check every 500ms
 });
+
