@@ -1,64 +1,67 @@
-console.log("🛠️ Brevlo: Starting Form Replacement Operation...");
+console.log("🧟 Brevlo Zombie Mode: Activating...");
 
 window.addEventListener('load', () => {
-    // Thoda wait karo taaki Framer apna form load kar le
-    setTimeout(() => {
-        // 1. Framer ka Form dhoondo
-        const framerForm = document.querySelector('form');
+    const checkInterval = setInterval(() => {
+        const originalForm = document.querySelector('form');
         
-        if (framerForm) {
-            // Uska parent dhoondo taaki hum wahi replace kar sakein
-            const container = framerForm.parentElement;
-            
-            // 2. Framer Form ko DELETE karo
-            framerForm.remove();
-            console.log("🗑️ Framer Form Deleted.");
+        if (originalForm) {
+            clearInterval(checkInterval);
+            console.log("🎯 Form Detected. Disconnecting Framer...");
 
-            // 3. Apna CUSTOM Form banao (Dark Theme Style)
-            const myForm = document.createElement('form');
-            myForm.action = "https://formsubmit.co/opeditor5@gmail.com";
-            myForm.method = "POST";
-            myForm.style.display = "flex";
-            myForm.style.flexDirection = "column";
-            myForm.style.gap = "15px";
-            myForm.style.width = "100%";
-            myForm.style.maxWidth = "100%"; // Container ki width le lega
+            // 1. FORM KI EXACT COPY BANAO (Deep Clone)
+            // Clone banane se React/Framer ke saare "Event Listeners" toot jate hain.
+            const zombieForm = originalForm.cloneNode(true);
 
-            // --- SETTINGS ---
-            // Redirect link (Apna Vercel wala link daal dena agar domain connected nahi hai)
-            const successUrl = window.location.origin + "/thank-you";
-            
-            myForm.innerHTML = `
-                <input type="hidden" name="_next" value="${successUrl}">
-                <input type="hidden" name="_subject" value="New Lead from Brevlo Website!">
+            // 2. PURANE FORM KO REPLACE KARO
+            originalForm.parentNode.replaceChild(zombieForm, originalForm);
+            console.log("✅ Framer Brain Removed. Form is now independent.");
+
+            // 3. AB NAYE FORM PAR APNA CONTROL LAGAO
+            zombieForm.action = "https://formsubmit.co/opeditor5@gmail.com";
+            zombieForm.method = "POST";
+
+            // 4. HIDDEN SETTINGS INJECT KARO (Redirect, Subject)
+            // Hum HTML string inject kar rahe hain taaki sure rahein ki ye elements hain
+            const settingsHTML = `
+                <input type="hidden" name="_next" value="https://brevlomedia.com/thank-you">
+                <input type="hidden" name="_subject" value="🔥 New Lead from Brevlo Site">
                 <input type="hidden" name="_captcha" value="false">
-
-                <input type="text" name="name" placeholder="Name" required 
-                    style="padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; font-size: 16px; outline: none;">
-                
-                <input type="email" name="email" placeholder="Email" required 
-                    style="padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; font-size: 16px; outline: none;">
-                
-                <textarea name="message" placeholder="Message" rows="4" required 
-                    style="padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; font-size: 16px; outline: none; resize: none;"></textarea>
-
-                <button type="submit" 
-                    style="padding: 16px; background: white; border: none; border-radius: 12px; color: black; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">
-                    Let's work together!
-                </button>
+                <input type="hidden" name="_template" value="table">
             `;
+            zombieForm.insertAdjacentHTML('afterbegin', settingsHTML);
 
-            // Hover effect for button
-            const btn = myForm.querySelector('button');
-            btn.onmouseover = () => btn.style.opacity = "0.8";
-            btn.onmouseout = () => btn.style.opacity = "1";
+            // 5. INPUTS KO NAAM DO (Data Capture Fix)
+            // Framer inputs par kabhi-kabhi 'name' attribute nahi hota, isliye hum manually set karenge
+            const inputs = zombieForm.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                if (input.type === 'email' || (input.placeholder && input.placeholder.toLowerCase().includes('email'))) {
+                    input.name = "email";
+                } else if (input.tagName === 'TEXTAREA' || (input.placeholder && input.placeholder.toLowerCase().includes('message'))) {
+                    input.name = "message";
+                } else if (input.type === 'text') {
+                    input.name = "name";
+                }
+            });
 
-            // 4. Inject karo
-            container.appendChild(myForm);
-            console.log("✅ Custom Form Injected Successfully.");
+            // 6. SUBMIT BUTTON DHOONDO AUR CLICK LOGIC LAGAO
+            // (Button bhi clone ho chuka hai, toh Framer ka error nahi aayega)
+            const submitBtn = zombieForm.querySelector('input[type="submit"], button, div[role="button"]');
             
-        } else {
-            console.log("❌ Framer form not found to replace.");
+            if (submitBtn) {
+                // Agar button 'div' hai (Framer aksar div use karta hai), toh use clickable banao
+                submitBtn.style.cursor = "pointer";
+                
+                submitBtn.addEventListener('click', (e) => {
+                    // Agar ye asli button nahi hai (div hai), toh form ko manually submit karo
+                    if (submitBtn.tagName !== "BUTTON" && submitBtn.type !== "submit") {
+                        zombieForm.requestSubmit(); // Modern browsers
+                    }
+                    // Visual feedback
+                    submitBtn.innerText = "Sending...";
+                    submitBtn.style.opacity = "0.7";
+                });
+            }
+
         }
-    }, 1500); // 1.5 seconds wait (adjust if needed)
+    }, 500); // Check every 500ms
 });
