@@ -1,76 +1,64 @@
-console.log("☢️ Brevlo Nuclear Fix Loaded");
+console.log("🛠️ Brevlo: Starting Form Replacement Operation...");
 
-// 1. CSS: Framer ke Error Message ko dikhne se pehle hi gayab kar do
-const style = document.createElement('style');
-style.innerHTML = `
-  .framer-form-error, 
-  div[data-framer-component-type="Form"] ~ div {
-      display: none !important;
-      visibility: hidden !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-  }
-`;
-document.head.appendChild(style);
+window.addEventListener('load', () => {
+    // Thoda wait karo taaki Framer apna form load kar le
+    setTimeout(() => {
+        // 1. Framer ka Form dhoondo
+        const framerForm = document.querySelector('form');
+        
+        if (framerForm) {
+            // Uska parent dhoondo taaki hum wahi replace kar sakein
+            const container = framerForm.parentElement;
+            
+            // 2. Framer Form ko DELETE karo
+            framerForm.remove();
+            console.log("🗑️ Framer Form Deleted.");
 
-// 2. THE INTERCEPTOR (Capture Phase)
-// 'true' ka matlab hai ye event sabse pehle humein milega, Framer se bhi pehle
-window.addEventListener('submit', function(e) {
-    
-    // Check karo ki ye wo wala form hai ya nahi
-    const form = e.target;
-    
-    // Agar form ke andar "work together" jaisa kuch button hai ya ye main form hai
-    // (Safety ke liye hum har form submit ko hijack kar rahe hain kyunki site pe ek hi form hai)
-    
-    // STOP EVERYTHING! Framer ko pata mat chalne do.
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
+            // 3. Apna CUSTOM Form banao (Dark Theme Style)
+            const myForm = document.createElement('form');
+            myForm.action = "https://formsubmit.co/opeditor5@gmail.com";
+            myForm.method = "POST";
+            myForm.style.display = "flex";
+            myForm.style.flexDirection = "column";
+            myForm.style.gap = "15px";
+            myForm.style.width = "100%";
+            myForm.style.maxWidth = "100%"; // Container ki width le lega
 
-    console.log("🛑 Framer Submission Blocked. Taking over.");
+            // --- SETTINGS ---
+            // Redirect link (Apna Vercel wala link daal dena agar domain connected nahi hai)
+            const successUrl = window.location.origin + "/thank-you";
+            
+            myForm.innerHTML = `
+                <input type="hidden" name="_next" value="${successUrl}">
+                <input type="hidden" name="_subject" value="New Lead from Brevlo Website!">
+                <input type="hidden" name="_captcha" value="false">
 
-    // --- DATA NIKALO ---
-    const nameInput = form.querySelector('input[name="name"], input[type="text"]');
-    const emailInput = form.querySelector('input[name="email"], input[type="email"]');
-    const msgInput = form.querySelector('textarea');
+                <input type="text" name="name" placeholder="Name" required 
+                    style="padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; font-size: 16px; outline: none;">
+                
+                <input type="email" name="email" placeholder="Email" required 
+                    style="padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; font-size: 16px; outline: none;">
+                
+                <textarea name="message" placeholder="Message" rows="4" required 
+                    style="padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; font-size: 16px; outline: none; resize: none;"></textarea>
 
-    const nameVal = nameInput ? nameInput.value : "Unknown";
-    const emailVal = emailInput ? emailInput.value : "Unknown";
-    const msgVal = msgInput ? msgInput.value : "Unknown";
+                <button type="submit" 
+                    style="padding: 16px; background: white; border: none; border-radius: 12px; color: black; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">
+                    Let's work together!
+                </button>
+            `;
 
-    // --- BUTTON KO "SENDING" KARO ---
-    const btn = form.querySelector('button, input[type="submit"], div[role="button"]');
-    if (btn) {
-        btn.innerText = "Sending...";
-        btn.style.opacity = "0.7";
-    }
+            // Hover effect for button
+            const btn = myForm.querySelector('button');
+            btn.onmouseover = () => btn.style.opacity = "0.8";
+            btn.onmouseout = () => btn.style.opacity = "1";
 
-    // --- CREATE NEW HIDDEN FORM (FormSubmit.co) ---
-    // Hum naya form banakar submit karenge taaki Framer ka validation beech mein na aaye
-    const newForm = document.createElement('form');
-    newForm.action = "https://formsubmit.co/opeditor5@gmail.com";
-    newForm.method = "POST";
-    newForm.style.display = "none";
-
-    // Data Fields
-    const i1 = document.createElement('input'); i1.type="hidden"; i1.name="Name"; i1.value=nameVal;
-    const i2 = document.createElement('input'); i2.type="hidden"; i2.name="Email"; i2.value=emailVal;
-    const i3 = document.createElement('input'); i3.type="hidden"; i3.name="Message"; i3.value=msgVal;
-    
-    // Settings (Redirect to Thank You)
-    const i4 = document.createElement('input'); i4.type="hidden"; i4.name="_next"; 
-    i4.value = "https://brevlomedia.com/thank-you"; // Vercel wala link bhi daal sakta hai yahan agar domain connect nahi hai
-    
-    const i5 = document.createElement('input'); i5.type="hidden"; i5.name="_subject"; i5.value="New Lead from Brevlo!";
-    const i6 = document.createElement('input'); i6.type="hidden"; i6.name="_captcha"; i6.value="false";
-
-    newForm.appendChild(i1); newForm.appendChild(i2); newForm.appendChild(i3);
-    newForm.appendChild(i4); newForm.appendChild(i5); newForm.appendChild(i6);
-
-    document.body.appendChild(newForm);
-    
-    // FIRE!
-    newForm.submit();
-
-}, true); // <--- YE 'true' SABSE ZAROORI HAI
+            // 4. Inject karo
+            container.appendChild(myForm);
+            console.log("✅ Custom Form Injected Successfully.");
+            
+        } else {
+            console.log("❌ Framer form not found to replace.");
+        }
+    }, 1500); // 1.5 seconds wait (adjust if needed)
+});
