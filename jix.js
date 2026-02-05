@@ -1,111 +1,114 @@
-console.log("👻 Brevlo Ghost Mode Loaded");
+console.log("💀 Brevlo Lobotomy Script Loaded");
+
+// 1. ERROR HIDER (Agar galti se 1% bhi error aaye, toh wo dikhe hi na)
+const style = document.createElement('style');
+style.innerHTML = `
+  /* Framer Error Message ko hide karo */
+  .framer-form-error, 
+  div[data-framer-component-type="Form"] ~ div {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+  }
+`;
+document.head.appendChild(style);
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // Email jahan message chahiye (Apna email yahan dhyan se daalna)
-    const MY_EMAIL = "opeditor5@gmail.com"; 
+    // --- SETTINGS ---
+    const MY_EMAIL = "opeditor5@gmail.com"; // Yahan apni email confirm kar lena
+    // ----------------
 
-    // Button dhoondo
-    const finder = setInterval(() => {
-        const targets = document.querySelectorAll('div, button, a');
-        let targetBtn = null;
+    // Button ko dhoondne ke liye loop (Framer load hone ka wait)
+    const killerInterval = setInterval(() => {
+        
+        // Button dhoondo
+        const targets = document.querySelectorAll('button, a[role="button"], div[role="button"]');
+        let framerBtn = null;
 
-        for (let el of targets) {
-            // Hum wo element dhoond rahe hain jo button jaisa dikhta hai aur text match karta hai
-            if (el.innerText && el.innerText.toLowerCase().includes("work together")) {
-                if (el.tagName === 'BUTTON' || el.getAttribute('role') === 'button' || el.className.includes('framer')) {
-                    targetBtn = el;
-                    break;
-                }
+        for (let btn of targets) {
+            if (btn.innerText && btn.innerText.toLowerCase().includes("work together")) {
+                framerBtn = btn;
+                break;
             }
         }
 
-        if (targetBtn) {
-            clearInterval(finder);
-            console.log("🎯 Target Found. Applying Invisible Shield.");
+        if (framerBtn) {
+            clearInterval(killerInterval);
+            console.log("🎯 Button Found. Performing Lobotomy...");
 
-            // Target button ko 'relative' banao taaki hum uske upar kuch chipka sakein
-            targetBtn.style.position = "relative";
-            targetBtn.style.zIndex = "10"; // Ensure it's clickable context
+            // 2. THE LOBOTOMY (Button ka 'Submit' power cheen lo)
+            // Agar ye 'submit' nahi rahega, toh Framer form trigger hi nahi hoga.
+            framerBtn.setAttribute("type", "button"); 
 
-            // --- THE INVISIBLE FORM ---
-            // Hum ek form banayenge jo button ke size ka hoga, par invisible
-            const ghostForm = document.createElement('form');
-            ghostForm.action = `https://formsubmit.co/vtoog2008@gmail.com`; // Free Service
-            ghostForm.method = "POST";
+            // 3. CLONE & REPLACE (Framer ke connection kaat do)
+            const cleanBtn = framerBtn.cloneNode(true);
+            framerBtn.parentNode.replaceChild(cleanBtn, framerBtn);
+
+            // 4. APNA LOGIC LAGAO (FormSubmit.co)
+            cleanBtn.style.cursor = "pointer";
+            cleanBtn.style.opacity = "1";
             
-            // CSS to make it overlay perfectly
-            ghostForm.style.position = "absolute";
-            ghostForm.style.top = "0";
-            ghostForm.style.left = "0";
-            ghostForm.style.width = "100%";
-            ghostForm.style.height = "100%";
-            ghostForm.style.opacity = "0"; // Invisible!
-            ghostForm.style.cursor = "pointer";
-            ghostForm.style.zIndex = "999"; // Sabse upar
-            ghostForm.style.margin = "0";
-            ghostForm.style.padding = "0";
+            cleanBtn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
 
-            // Important Settings for FormSubmit
-            // 1. Redirect to Thank You Page
-            const nextInput = document.createElement('input');
-            nextInput.type = "hidden";
-            nextInput.name = "_next";
-            nextInput.value = "https://brevlomedia.com/thank-you"; // Tera thank you page
-            ghostForm.appendChild(nextInput);
+                // Visual Feedback
+                cleanBtn.innerText = "Sending...";
+                cleanBtn.style.opacity = "0.7";
 
-            // 2. Subject Line
-            const subjectInput = document.createElement('input');
-            subjectInput.type = "hidden";
-            subjectInput.name = "_subject";
-            subjectInput.value = "New Lead from Brevlo Site! 🔥";
-            ghostForm.appendChild(subjectInput);
+                // --- DATA COLLECTION ---
+                // Page se inputs dhoondo
+                const nameVal = document.querySelector('input[type="text"]')?.value || "No Name";
+                const emailVal = document.querySelector('input[type="email"]')?.value || "No Email";
+                const msgVal = document.querySelector('textarea')?.value || "No Message";
 
-            // 3. Captcha Band (Optional)
-            const captchaInput = document.createElement('input');
-            captchaInput.type = "hidden";
-            captchaInput.name = "_captcha";
-            captchaInput.value = "false"; // Captcha nahi chahiye
-            ghostForm.appendChild(captchaInput);
+                // --- CREATE INVISIBLE FORM FOR FORMSUBMIT ---
+                // Hum JS se ek naya form banayenge aur use submit karenge
+                const form = document.createElement('form');
+                form.action = `https://formsubmit.co/${MY_EMAIL}`;
+                form.method = "POST";
+                form.style.display = "none";
 
-            // --- DATA INPUTS (Hidden) ---
-            // Hum asli inputs se data copy karke yahan daalenge submit ke waqt
-            const nameH = document.createElement('input'); nameH.type="hidden"; nameH.name="Name";
-            const emailH = document.createElement('input'); emailH.type="hidden"; emailH.name="Email";
-            const msgH = document.createElement('input'); msgH.type="hidden"; msgH.name="Message";
-            
-            ghostForm.appendChild(nameH);
-            ghostForm.appendChild(emailH);
-            ghostForm.appendChild(msgH);
-
-            // Submit Button (Invisible layer ka trigger)
-            const submitBtn = document.createElement('button');
-            submitBtn.type = "submit";
-            submitBtn.style.width = "100%";
-            submitBtn.style.height = "100%";
-            submitBtn.style.border = "none";
-            submitBtn.style.background = "transparent";
-            ghostForm.appendChild(submitBtn);
-
-            // --- LOGIC: Jab koi click kare, data copy karo ---
-            submitBtn.addEventListener('click', () => {
-                // Page ke asli inputs dhoondo
-                const realName = document.querySelector('input[type="text"]')?.value || "Not Provided";
-                const realEmail = document.querySelector('input[type="email"]')?.value || "Not Provided";
-                const realMsg = document.querySelector('textarea')?.value || "Not Provided";
-
-                // Hidden inputs mein data bharo
-                nameH.value = realName;
-                emailH.value = realEmail;
-                msgH.value = realMsg;
+                // Hidden Inputs
+                const inputName = document.createElement('input');
+                inputName.type = "hidden"; inputName.name = "name"; inputName.value = nameVal;
                 
-                // Visual feedback (Asli button ko thoda change karo taaki feel aaye)
-                targetBtn.innerText = "Sending...";
-                targetBtn.style.opacity = "0.8";
-            });
+                const inputEmail = document.createElement('input');
+                inputEmail.type = "hidden"; inputEmail.name = "email"; inputEmail.value = emailVal;
+                
+                const inputMsg = document.createElement('input');
+                inputMsg.type = "hidden"; inputMsg.name = "message"; inputMsg.value = msgVal;
 
-            // Form ko button ke andar daal do (Overlay)
-            targetBtn.appendChild(ghostForm);
+                // Settings (Redirect & Subject)
+                const inputRedirect = document.createElement('input');
+                inputRedirect.type = "hidden"; inputRedirect.name = "_next"; 
+                inputRedirect.value = "https://brevlomedia.com/thank-you"; // Tera thank you page
+
+                const inputSubject = document.createElement('input');
+                inputSubject.type = "hidden"; inputSubject.name = "_subject"; 
+                inputSubject.value = "New Lead from Brevlo Website!";
+
+                const inputCaptcha = document.createElement('input');
+                inputCaptcha.type = "hidden"; inputCaptcha.name = "_captcha"; 
+                inputCaptcha.value = "false";
+
+                // Append everything
+                form.appendChild(inputName);
+                form.appendChild(inputEmail);
+                form.appendChild(inputMsg);
+                form.appendChild(inputRedirect);
+                form.appendChild(inputSubject);
+                form.appendChild(inputCaptcha);
+
+                document.body.appendChild(form);
+                
+                // --- FIRE! ---
+                form.submit(); 
+            };
+            
+            console.log("✅ Button is now under our control.");
         }
-    }, 500);
+    }, 500); // Check every 500ms
 });
