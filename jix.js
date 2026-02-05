@@ -1,90 +1,76 @@
-console.log("👻 Brevlo: Vercel Ghost Mode Activated");
+console.log("☢️ Brevlo Nuclear Fix Loaded");
 
-// 1. CSS Injection: Error messages ko force-hide karna
+// 1. CSS: Framer ke Error Message ko dikhne se pehle hi gayab kar do
 const style = document.createElement('style');
 style.innerHTML = `
-  /* Framer ke error box ko chupa do */
   .framer-form-error, 
   div[data-framer-component-type="Form"] ~ div {
       display: none !important;
-      opacity: 0 !important;
       visibility: hidden !important;
+      opacity: 0 !important;
       pointer-events: none !important;
   }
 `;
 document.head.appendChild(style);
 
-// 2. Main Logic
-document.addEventListener("DOMContentLoaded", () => {
+// 2. THE INTERCEPTOR (Capture Phase)
+// 'true' ka matlab hai ye event sabse pehle humein milega, Framer se bhi pehle
+window.addEventListener('submit', function(e) {
     
-    // --- SETTINGS (Is email par leads aayengi) ---
-    const MY_EMAIL = "opeditor5@gmail.com"; 
-    // ---------------------------------------------
+    // Check karo ki ye wo wala form hai ya nahi
+    const form = e.target;
+    
+    // Agar form ke andar "work together" jaisa kuch button hai ya ye main form hai
+    // (Safety ke liye hum har form submit ko hijack kar rahe hain kyunki site pe ek hi form hai)
+    
+    // STOP EVERYTHING! Framer ko pata mat chalne do.
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.stopPropagation();
 
-    const finder = setInterval(() => {
-        // Button dhoondo (Text match karke)
-        const targets = document.querySelectorAll('button, a, div[role="button"]');
-        let targetBtn = null;
+    console.log("🛑 Framer Submission Blocked. Taking over.");
 
-        for (let btn of targets) {
-            if (btn.innerText && btn.innerText.toLowerCase().includes("work together")) {
-                targetBtn = btn;
-                break;
-            }
-        }
+    // --- DATA NIKALO ---
+    const nameInput = form.querySelector('input[name="name"], input[type="text"]');
+    const emailInput = form.querySelector('input[name="email"], input[type="email"]');
+    const msgInput = form.querySelector('textarea');
 
-        if (targetBtn) {
-            clearInterval(finder);
-            console.log("🎯 Target Found. Applying Logic.");
+    const nameVal = nameInput ? nameInput.value : "Unknown";
+    const emailVal = emailInput ? emailInput.value : "Unknown";
+    const msgVal = msgInput ? msgInput.value : "Unknown";
 
-            // A. CLONE & REPLACE (Framer ka dimaag nikal do)
-            // Isse Framer ke saare event listeners hat jayenge
-            const newBtn = targetBtn.cloneNode(true);
-            targetBtn.parentNode.replaceChild(newBtn, targetBtn);
+    // --- BUTTON KO "SENDING" KARO ---
+    const btn = form.querySelector('button, input[type="submit"], div[role="button"]');
+    if (btn) {
+        btn.innerText = "Sending...";
+        btn.style.opacity = "0.7";
+    }
 
-            // B. Visuals fix karo (Clone hone par kabhi kabhi styles hil jate hain)
-            newBtn.style.cursor = "pointer";
-            newBtn.style.pointerEvents = "auto";
+    // --- CREATE NEW HIDDEN FORM (FormSubmit.co) ---
+    // Hum naya form banakar submit karenge taaki Framer ka validation beech mein na aaye
+    const newForm = document.createElement('form');
+    newForm.action = "https://formsubmit.co/opeditor5@gmail.com";
+    newForm.method = "POST";
+    newForm.style.display = "none";
 
-            // C. Click Logic (FormSubmit.co)
-            newBtn.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+    // Data Fields
+    const i1 = document.createElement('input'); i1.type="hidden"; i1.name="Name"; i1.value=nameVal;
+    const i2 = document.createElement('input'); i2.type="hidden"; i2.name="Email"; i2.value=emailVal;
+    const i3 = document.createElement('input'); i3.type="hidden"; i3.name="Message"; i3.value=msgVal;
+    
+    // Settings (Redirect to Thank You)
+    const i4 = document.createElement('input'); i4.type="hidden"; i4.name="_next"; 
+    i4.value = "https://brevlomedia.com/thank-you"; // Vercel wala link bhi daal sakta hai yahan agar domain connect nahi hai
+    
+    const i5 = document.createElement('input'); i5.type="hidden"; i5.name="_subject"; i5.value="New Lead from Brevlo!";
+    const i6 = document.createElement('input'); i6.type="hidden"; i6.name="_captcha"; i6.value="false";
 
-                // 1. Text change "Sending..."
-                const originalText = newBtn.innerText;
-                newBtn.innerText = "Sending...";
-                newBtn.style.opacity = "0.7";
+    newForm.appendChild(i1); newForm.appendChild(i2); newForm.appendChild(i3);
+    newForm.appendChild(i4); newForm.appendChild(i5); newForm.appendChild(i6);
 
-                // 2. Data uthao
-                const name = document.querySelector('input[type="text"]')?.value || "No Name";
-                const email = document.querySelector('input[type="email"]')?.value || "No Email";
-                const msg = document.querySelector('textarea')?.value || "No Message";
+    document.body.appendChild(newForm);
+    
+    // FIRE!
+    newForm.submit();
 
-                // 3. Invisible Form banao aur submit karo
-                const form = document.createElement('form');
-                form.action = `https://formsubmit.co/${MY_EMAIL}`;
-                form.method = "POST";
-                
-                // Hidden Inputs
-                const i1 = document.createElement('input'); i1.type="hidden"; i1.name="Name"; i1.value=name;
-                const i2 = document.createElement('input'); i2.type="hidden"; i2.name="Email"; i2.value=email;
-                const i3 = document.createElement('input'); i3.type="hidden"; i3.name="Message"; i3.value=msg;
-                
-                // Settings
-                const i4 = document.createElement('input'); i4.type="hidden"; i4.name="_next"; 
-                // Redirect wapas Thank You page par
-                i4.value = window.location.origin + "/thank-you"; 
-                
-                const i5 = document.createElement('input'); i5.type="hidden"; i5.name="_captcha"; i5.value="false";
-                const i6 = document.createElement('input'); i6.type="hidden"; i6.name="_subject"; i6.value="New Lead from Brevlo!";
-
-                form.appendChild(i1); form.appendChild(i2); form.appendChild(i3);
-                form.appendChild(i4); form.appendChild(i5); form.appendChild(i6);
-
-                document.body.appendChild(form);
-                form.submit(); // Browser ko page change karne do
-            };
-        }
-    }, 500); // Har 500ms check karo
-});
+}, true); // <--- YE 'true' SABSE ZAROORI HAI
