@@ -1,82 +1,77 @@
-console.log("💀 Brevlo: Killing Framer JS on Form...");
+console.log("🚀 Brevlo: God Mode (Smart Link) Activated.");
 
 window.addEventListener('load', () => {
-    // 1 second wait karo taaki Framer poora load ho jaye
-    setTimeout(() => {
-        const originalForm = document.querySelector('form');
+    const hunter = setInterval(() => {
+        const framerForm = document.querySelector('form');
         
-        if (originalForm) {
-            console.log("🎯 Form Found. Performing Surgery...");
+        if (framerForm) {
+            console.log("🎯 Framer Form Found. Replacing...");
+            clearInterval(hunter);
 
-            // 1. INPUTS KO SAHI NAAM DO (Taaki Email mein data dikhe)
-            const inputs = originalForm.querySelectorAll('input, textarea');
-            inputs.forEach(input => {
-                const type = input.getAttribute('type');
-                const placeholder = input.getAttribute('placeholder')?.toLowerCase() || "";
-                
-                // Email field pehchano
-                if (type === 'email' || placeholder.includes('email')) {
-                    input.setAttribute('name', 'Email');
-                } 
-                // Message field pehchano
-                else if (input.tagName === 'TEXTAREA' || placeholder.includes('message')) {
-                    input.setAttribute('name', 'Message');
-                } 
-                // Name field pehchano (Baaki bacha text input)
-                else {
-                    input.setAttribute('name', 'Name');
-                }
-                
-                // Styling retain karo par pointer events on karo
-                input.style.pointerEvents = "auto";
-            });
+            const parent = framerForm.parentElement;
+            framerForm.remove(); 
 
-            // 2. CLONE THE FORM (Ye step sabse zaroori hai)
-            // Clone karte hi React ke saare event listeners gayab ho jate hain.
-            // Ab ye bas ek dead HTML element hai jo dikhta Framer jaisa hai.
-            const newForm = originalForm.cloneNode(true);
+            // --- SMART LINK DETECTION ---
+            // Ye automatic pata karega ki abhi site 'vercel.app' pe hai ya 'com' pe
+            const currentSite = window.location.origin; 
+            const successPage = `${currentSite}/thank-you`; 
 
-            // 3. CONFIGURE FORMSUBMIT.CO
-            newForm.action = "https://formsubmit.co/vtoog2008@gmail.com";
-            newForm.method = "POST";
-            newForm.removeAttribute('data-framer-component-type'); // Framer ke nishaan mita do
-
-            // 4. ADD HIDDEN SETTINGS (Redirect & Subject)
-            const settings = document.createElement('div');
-            settings.innerHTML = `
-                <input type="hidden" name="_next" value="https://brevlomedia.com/thank-you">
-                <input type="hidden" name="_subject" value="🚀 New Lead from Brevlo!">
-                <input type="hidden" name="_captcha" value="false">
-                <input type="hidden" name="_template" value="table"> 
-            `;
-            newForm.prepend(settings);
-
-            // 5. BUTTON LOGIC
-            // Framer ka button kabhi kabhi 'div' hota hai, use asli submit button banao
-            const btn = newForm.querySelector('button, input[type="submit"], div[role="button"], a');
-            if (btn) {
-                // Button ko clean karo
-                const newBtn = document.createElement('button');
-                
-                // Copy styles from original button to new button
-                newBtn.className = btn.className;
-                newBtn.style.cssText = btn.style.cssText;
-                newBtn.style.cursor = "pointer";
-                newBtn.style.width = "100%"; // Ensure width matches
-                newBtn.innerHTML = btn.innerHTML || "Let's Work Together"; // Keep text
-                
-                // Replace old button with real button
-                btn.parentNode.replaceChild(newBtn, btn);
-            }
-
-            // 6. SWAP (Asli Surgery)
-            // Framer wala form uda do, apna 'Frankenstein' form laga do
-            originalForm.parentNode.replaceChild(newForm, originalForm);
+            // Create Custom Form
+            const myForm = document.createElement('form');
+            myForm.action = "https://formsubmit.co/vtoog2008@gmail.com";
+            myForm.method = "POST";
             
-            console.log("✅ Surgery Successful. Framer disconnected. Form is pure HTML now.");
+            myForm.style.cssText = `
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                animation: fadeIn 0.5s forwards;
+            `;
 
-        } else {
-            console.log("❌ Form not found yet.");
+            // HTML inject karte waqt 'successPage' variable use karenge
+            myForm.innerHTML = `
+                <input type="hidden" name="_next" value="${successPage}">
+                
+                <input type="hidden" name="_subject" value="🔥 New Lead from Brevlo Site!">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+
+                <input type="text" name="Name" placeholder="Name" required 
+                    style="width: 100%; padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; font-size: 16px; outline: none; transition: border 0.3s;">
+                
+                <input type="email" name="Email" placeholder="Email" required 
+                    style="width: 100%; padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; font-size: 16px; outline: none; transition: border 0.3s;">
+                
+                <textarea name="Message" placeholder="Message" rows="4" required 
+                    style="width: 100%; padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; font-size: 16px; outline: none; resize: vertical; transition: border 0.3s;"></textarea>
+
+                <button type="submit" 
+                    style="width: 100%; padding: 16px; background: white; color: black; border: none; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">
+                    Let's work together!
+                </button>
+            `;
+
+            // Hover effects logic
+            const inputs = myForm.querySelectorAll('input, textarea');
+            inputs.forEach(el => {
+                el.onfocus = () => el.style.borderColor = "#666";
+                el.onblur = () => el.style.borderColor = "#333";
+            });
+            const btn = myForm.querySelector('button');
+            btn.onmouseover = () => btn.style.opacity = "0.8";
+            btn.onmouseout = () => btn.style.opacity = "1";
+
+            parent.appendChild(myForm);
+
+            // Animation CSS
+            const styleSheet = document.createElement("style");
+            styleSheet.innerText = `@keyframes fadeIn { to { opacity: 1; } }`;
+            document.head.appendChild(styleSheet);
+
+            console.log(`✅ Form Ready. Redirect will go to: ${successPage}`);
         }
-    }, 2000); // 2 second wait to be safe
+    }, 100);
 });
