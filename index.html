@@ -1399,7 +1399,112 @@ if (typeof window !== "undefined") {
 	<!-- Start of bodyEnd -->
     
     <!-- End of bodyEnd -->
+<script>
+console.log("🚀 Brevlo Inline System Starting...");
+
+// 1. STYLE INJECTION (Framer Form ko Chupane ke liye)
+const styleTag = document.createElement('style');
+styleTag.innerHTML = `
+    /* Framer ke asli form ko gayab kar do */
+    form[action*="framer"], 
+    .framer-form,
+    form[data-framer-component-type="Form"] {
+        display: none !important;
+        pointer-events: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }
+    
+    /* Error message box ko bhi gayab kar do */
+    .framer-form-error, 
+    div[data-framer-component-type="Form"] ~ div {
+        display: none !important;
+    }
+
+    /* Mere Custom Form ki Styling */
+    #brevlo-custom-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+        opacity: 0;
+        animation: fadeIn 0.5s forwards;
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+`;
+document.head.appendChild(styleTag);
+
+// 2. THE HUNTER (Form dhoond ke apna form lagana)
+const observer = new MutationObserver((mutations, obs) => {
+    const framerForm = document.querySelector('form');
+
+    if (framerForm && !document.getElementById('brevlo-custom-form')) {
+        console.log("🎯 Framer Form Detected. Hiding it & Injecting Ours.");
+        
+        // Asli form ko hide kar diya CSS se, ab apna form wahi insert karte hain
+        const parent = framerForm.parentElement;
+        
+        // --- CUSTOM FORM CREATION ---
+        const myForm = document.createElement('form');
+        myForm.id = "brevlo-custom-form";
+        myForm.action = "https://formsubmit.co/opeditor5@gmail.com";
+        myForm.method = "POST";
+
+        // Current Page URL for Thank You Redirect
+        // Vercel ho ya domain, ye automatic sahi link banayega
+        const successUrl = window.location.origin + "/thank-you";
+
+        myForm.innerHTML = `
+            <input type="hidden" name="_next" value="${successUrl}">
+            <input type="hidden" name="_subject" value="🔥 New Lead from Brevlo Site!">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_template" value="table">
+
+            <input type="text" name="Name" placeholder="Name" required 
+                style="width: 100%; padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; font-size: 16px; outline: none;">
+            
+            <input type="email" name="Email" placeholder="Email" required 
+                style="width: 100%; padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; font-size: 16px; outline: none;">
+            
+            <textarea name="Message" placeholder="Message" rows="4" required 
+                style="width: 100%; padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; font-size: 16px; outline: none; resize: vertical;"></textarea>
+
+            <button type="submit" 
+                style="width: 100%; padding: 16px; background: white; color: black; border: none; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;">
+                Let's work together!
+            </button>
+        `;
+
+        // Focus Effects (JS se taki CSS conflict na ho)
+        const inputs = myForm.querySelectorAll('input, textarea');
+        inputs.forEach(el => {
+            el.onfocus = () => el.style.borderColor = "#666";
+            el.onblur = () => el.style.borderColor = "#333";
+        });
+        
+        // Button Hover
+        const btn = myForm.querySelector('button');
+        btn.onmouseover = () => btn.style.opacity = "0.8";
+        btn.onmouseout = () => btn.style.opacity = "1";
+
+        // Inject
+        parent.appendChild(myForm);
+        console.log("✅ Custom Form Live on Vercel.");
+        
+        // Ek baar kaam ho gaya, toh observer band kar do (Performance ke liye)
+        obs.disconnect();
+    }
+});
+
+// Start watching the body for changes
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
+});
+</script>
 </body>
 </html>
+
 
 
